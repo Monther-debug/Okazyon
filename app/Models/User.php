@@ -1,0 +1,110 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\MediaLibrary\HasMedia;
+
+class User extends Authenticatable implements HasMedia
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'phone_number',
+        'date_of_birth',
+        'gender',
+        'password',
+        'type',
+        'status',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    /**
+     * Get the FCM tokens associated with the user.
+     */
+    public function fcmTokens()
+    {
+        return $this->hasMany(FcmToken::class);
+    }
+
+    /**
+     * Get the notifications associated with the user.
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile(); // Only one avatar at a time
+    }
+
+    ///// Scopes ////////
+
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    public function scopeType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    public function scopePhoneNumber($query, $phoneNumber)
+    {
+        return $query->where('phone_number', 'like', "%{$phoneNumber}%");
+    }
+
+    public function scopeName($query, $name)
+    {
+        return $query->whereRaw('LOWER(CONCAT(first_name, " ", last_name)) LIKE ?', ['%' . strtolower($name) . '%']);
+    }
+
+    public function scopeGender($query, $gender)
+    {
+        return $query->whereRaw('LOWER(gender) = ?', [strtolower($gender)]);
+    }
+    public function scopeDateOfBirth($query, $dateOfBirth)
+    {
+        return $query->whereDate('date_of_birth', $dateOfBirth);
+    }
+}
