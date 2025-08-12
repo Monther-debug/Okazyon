@@ -12,13 +12,14 @@ return new class extends Migration {
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('target_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('en_title');
             $table->string('ar_title');
             $table->text('en_body');
             $table->text('ar_body');
-            $table->string('type')->nullable();
+            $table->string('target_type')->nullable();
             $table->string('status')->default('pending');
+            $table->timestamp('scheduled_at')->nullable();
             $table->timestamps();
         });
     }
