@@ -9,4 +9,5 @@ return [
     'password_reset_successfully' => 'تم إعادة تعيين كلمة المرور بنجاح.',
     'current_password_incorrect' => 'كلمة المرور الحالية غير صحيحة.',
     'password_changed_successfully' => 'تم تغيير كلمة المرور بنجاح.',
+    'unauthorized'=>'غير مصرح'
 ];
