@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Utility\Enums\NotificationStatusEnum;
+use App\Utility\Enums\NotificationTypeEnum;
+
 use App\Services\Firebase\NotificationService;
 
 class Notification extends Model
@@ -10,15 +13,21 @@ class Notification extends Model
 
 
     protected $fillable = [
-        'user_id',
+        'target_id',
         'en_title',
         'ar_title',
         'en_body',
         'ar_body',
-        'type',
+        'target_type',
         'status',
+        'scheduled_at',
     ];
 
+
+    protected $casts = [
+        'status' => NotificationStatusEnum::class,
+        'target_type' => NotificationTypeEnum::class,
+    ];
 
     /**
      * Get the user that owns the notification.
@@ -26,6 +35,26 @@ class Notification extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+
+    public function scopeForUser($query, $id)
+    {
+        return $query->where('target_id', $id);
+    }
+
+    public function scopeForType($query, $type)
+    {
+        return $query->where('target_type', $type);
+    }
+    public function scopeForStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    public function scopeForTargetType($query, $type)
+    {
+        return $query->where('target_type', $type);
     }
 
 }
