@@ -4,6 +4,7 @@ namespace App\Services\Firebase;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\FcmToken;
+use App\Utility\Enums\NotificationTypeEnum;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +25,6 @@ class NotificationService
             return $user->fcmTokens->pluck('token');
         })->unique()->toArray();
 
-        // 3. Send the notification if any tokens were found.
         if (!empty($allTokens)) {
             $responses = [];
 
@@ -92,6 +92,15 @@ class NotificationService
 
         if (!empty($allTokens)) {
             $this->messaging->subscribeToTopic($topic, $allTokens);
+        }
+    }
+
+    public function send(Notification $notification)
+    {
+        if ($notification->target_type === NotificationTypeEnum::ALL) {
+            $this->sendToTopic('all', $notification);
+        } elseif ($notification->target_type === NotificationTypeEnum::SPECIFIC_USER) {
+            $this->sendToUsers([$notification->target_id], $notification);
         }
     }
 
