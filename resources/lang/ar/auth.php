@@ -9,5 +9,7 @@ return [
     'password_reset_successfully' => 'تم إعادة تعيين كلمة المرور بنجاح.',
     'current_password_incorrect' => 'كلمة المرور الحالية غير صحيحة.',
     'password_changed_successfully' => 'تم تغيير كلمة المرور بنجاح.',
-    'unauthorized'=>'غير مصرح'
+    'unauthorized' => 'غير مصرح',
+    'unauthenticated' => 'يجب أن تكون مصادق عليه للوصول إلى هذا المصدر.',
+    'unauthorized_admin' => 'يجب أن تكون مدير للوصول إلى هذا المصدر.'
 ];

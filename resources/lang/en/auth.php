@@ -9,5 +9,7 @@ return [
     'password_reset_successfully' => 'Password reset successfully.',
     'current_password_incorrect' => 'Current password is incorrect.',
     'password_changed_successfully' => 'Password changed successfully.',
-    'unauthorized' => 'Unauthorized'
+    'unauthorized' => 'Unauthorized',
+    'unauthenticated' => 'You must be authenticated to access this resource.',
+    'unauthorized_admin' => 'You must be an admin to access this resource.'
 ];
