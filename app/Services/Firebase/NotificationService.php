@@ -14,7 +14,19 @@ class NotificationService
     protected Messaging $messaging;
     public function __construct()
     {
-        $this->messaging = app('firebase.messaging');
+        $this->initializeFirebase();
+    }
+
+    protected function initializeFirebase()
+    {
+        $credentialsPath = env('FIREBASE_CREDENTIALS');
+        if (file_exists($credentialsPath)) {
+            $this->messaging = (new \Kreait\Firebase\Factory())
+                ->withServiceAccount($credentialsPath)
+                ->createMessaging();
+        } else {
+            throw new \Exception("Firebase credentials file not found at: {$credentialsPath}");
+        }
     }
 
     public function sendToUsers(array $userIds, Notification $notification)
