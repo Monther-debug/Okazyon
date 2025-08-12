@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Utility\Enums\UserStatusEnum;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -42,7 +43,7 @@ class UserController extends Controller
 
     public function alterBan(User $user)
     {
-        $user->update(['status' => $user->status === 'banned' ? 'active' : 'banned']);
-        return response()->json(['message' => "User with ID: {$user->id} has been {$user->status}."], 200);
+        $user->update(['status' => $user->status === UserStatusEnum::BANNED ? UserStatusEnum::ACTIVE : UserStatusEnum::BANNED]);
+        return response()->json(['message' => "User with ID: {$user->id} has been " . $user->status->value . "."], 200);
     }
 }
