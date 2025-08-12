@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'phone_number' => 'Phone Number',
+    'password' => 'Password',
+    'password_confirmation' => 'Password Confirmation',
+    'current_password' => 'Current Password',
+    'new_password' => 'New Password',
+    'otp' => 'OTP',
+    'purpose' => 'Purpose',
+    'date_of_birth' => 'Date of Birth',
+    'gender' => 'Gender',
+    'type' => 'Type',
+    'status' => 'Status',
+    'file' => 'File',
+    'token' => 'Token',
+    'device_id' => 'Device ID',
+    'device_type' => 'Device Type',
+    'en_title' => 'English Title',
+    'ar_title' => 'Arabic Title',
+    'en_body' => 'English Body',
+    'ar_body' => 'Arabic Body',
+    'target_type' => 'Target Type',
+];

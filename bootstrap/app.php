@@ -20,7 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-            //'language' => App\Http\Middleware\Language::class,
+            'setlocale' => App\Http\Middleware\SetLocale::class,
+        ]);
+
+        // Apply SetLocale middleware globally to all API routes
+        $middleware->api(prepend: [
+            App\Http\Middleware\SetLocale::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

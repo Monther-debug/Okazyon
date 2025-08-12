@@ -83,7 +83,7 @@ class NotificationController extends Controller
     public function destroy(Notification $notification)
     {
         if ($notification->status === NotificationStatusEnum::SENT) {
-            return response()->json(['message' => "Notification with ID: {$notification->id} is already sent and cannot be deleted."], 400);
+            return response()->json(['message' => __('admin.notification_already_sent_cannot_delete', ['id' => $notification->id])], 400);
         }
         $notification->delete();
         return response()->noContent();
@@ -93,7 +93,7 @@ class NotificationController extends Controller
     public function send(Notification $notification)
     {
         if ($notification->status === NotificationStatusEnum::SENT) {
-            return response()->json(['message' => "Notification with ID: {$notification->id} is already sent."], 400);
+            return response()->json(['message' => __('admin.notification_already_sent', ['id' => $notification->id])], 400);
         }
         $this->notificationService->send($notification);
 

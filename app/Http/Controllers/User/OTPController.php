@@ -18,14 +18,14 @@ class OTPController extends Controller
     }
     public function generateOTP(SendOtpRequest $request)
     {
-        $data =$request->validated();
+        $data = $request->validated();
 
-        $phoneNumber= $data['phone_number'];
+        $phoneNumber = $data['phone_number'];
         $purpose = $data['purpose'];
-        
+
         $otp = $this->otpService->generateOtp($phoneNumber, $purpose);
 
-        return response()->json(['message' => 'OTP sent successfully.'], 200);
+        return response()->json(['message' => __('otp.otp_sent_successfully')], 200);
     }
 
     public function verifyOTP(VerifyOtpRequest $request)
@@ -38,9 +38,9 @@ class OTPController extends Controller
         $isVerified = $this->otpService->verifyOtp($phoneNumber, $otpCode);
 
         if ($isVerified) {
-            return response()->json(['message' => 'OTP verified successfully.'], 200);
+            return response()->json(['message' => __('otp.otp_verified_successfully')], 200);
         } else {
-            return response()->json(['message' => 'Invalid or expired OTP.'], 400);
+            return response()->json(['message' => __('otp.invalid_or_expired_otp')], 400);
         }
     }
 }

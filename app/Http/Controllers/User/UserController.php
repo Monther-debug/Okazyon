@@ -23,7 +23,7 @@ class UserController extends Controller
         $user->update($data);
 
         return UserResource::make($user)->additional([
-            'message' => 'Profile updated successfully.'
+            'message' => __('user.profile_updated_successfully')
         ]);
     }
 
@@ -32,13 +32,13 @@ class UserController extends Controller
         $user = auth()->user();
 
         if (!password_verify($request->current_password, $user->password)) {
-            return response()->json(['message' => 'Current password is incorrect.'], 400);
+            return response()->json(['message' => __('auth.current_password_incorrect')], 400);
         }
 
         $user->password = bcrypt($request->new_password);
         $user->save();
 
-        return response()->json(['message' => 'Password changed successfully.'], 200);
+        return response()->json(['message' => __('auth.password_changed_successfully')], 200);
     }
 }
 

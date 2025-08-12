@@ -37,13 +37,13 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-        return response()->json(['message' => "User with ID: {$user->id} deleted successfully."], 200);
+        return response()->json(['message' => __('admin.user_deleted_successfully', ['id' => $user->id])], 200);
     }
 
 
     public function alterBan(User $user)
     {
         $user->update(['status' => $user->status === UserStatusEnum::BANNED ? UserStatusEnum::ACTIVE : UserStatusEnum::BANNED]);
-        return response()->json(['message' => "User with ID: {$user->id} has been " . $user->status->value . "."], 200);
+        return response()->json(['message' => __('admin.user_status_updated', ['id' => $user->id, 'status' => $user->status->value])], 200);
     }
 }

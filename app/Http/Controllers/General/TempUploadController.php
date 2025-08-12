@@ -21,7 +21,7 @@ class TempUploadController extends Controller
             ->toMediaCollection('temp_images');
 
         return response()->json([
-            'message' => 'Uploaded Successfully',
+            'message' => __('upload.uploaded_successfully'),
             'data' => [
                 'id' => $media->id,
                 'url' => $media->getFullUrl()

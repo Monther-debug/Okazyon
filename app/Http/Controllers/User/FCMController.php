@@ -30,6 +30,6 @@ class FCMController extends Controller
             ]
         );
         $this->fcmService->subscribeUsersToTopic([auth()->id()], 'general');
-        return response()->json(['message' => 'FCM token registered successfully.'], 200);
+        return response()->json(['message' => __('user.fcm_token_registered_successfully')], 200);
     }
 }

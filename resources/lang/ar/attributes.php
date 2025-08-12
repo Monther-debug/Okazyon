@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'first_name' => 'الاسم الأول',
+    'last_name' => 'اسم العائلة',
+    'phone_number' => 'رقم الهاتف',
+    'password' => 'كلمة المرور',
+    'password_confirmation' => 'تأكيد كلمة المرور',
+    'current_password' => 'كلمة المرور الحالية',
+    'new_password' => 'كلمة المرور الجديدة',
+    'otp' => 'رمز التحقق',
+    'purpose' => 'الغرض',
+    'date_of_birth' => 'تاريخ الميلاد',
+    'gender' => 'الجنس',
+    'type' => 'النوع',
+    'status' => 'الحالة',
+    'file' => 'الملف',
+    'token' => 'الرمز المميز',
+    'device_id' => 'معرف الجهاز',
+    'device_type' => 'نوع الجهاز',
+    'en_title' => 'العنوان الإنجليزي',
+    'ar_title' => 'العنوان العربي',
+    'en_body' => 'المحتوى الإنجليزي',
+    'ar_body' => 'المحتوى العربي',
+    'target_type' => 'نوع الهدف',
+];

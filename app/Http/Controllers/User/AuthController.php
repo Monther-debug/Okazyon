@@ -23,13 +23,13 @@ class AuthController extends Controller
             ->firstOrFail()
             ->isVerifiedUnderIntime();
         if (!$validOtp) {
-            return response()->json(['message' => 'Invalid or expired OTP.'], 400);
+            return response()->json(['message' => __('auth.invalid_or_expired_otp')], 400);
         } else {
             unset($data['otp']);
             $data['password'] = bcrypt($data['password']);
             User::create($data);
         }
-        return response()->json(['message' => 'User registered successfully.'], 201);
+        return response()->json(['message' => __('auth.user_registered_successfully')], 201);
     }
 
     public function login(LogInRequest $request)
@@ -37,14 +37,14 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+            return response()->json(['message' => __('auth.invalid_credentials')], 401);
         }
 
         $user = Auth::user();
 
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
-            'message' => 'Login successful.',
+            'message' => __('auth.login_successful'),
             'token' => $token,
             'user' => $user,
         ], 200);
@@ -56,7 +56,7 @@ class AuthController extends Controller
         $user = Auth::user();
         $user->tokens()->delete();
 
-        return response()->json(['message' => 'Logout successful.'], 200);
+        return response()->json(['message' => __('auth.logout_successful')], 200);
     }
 
     public function reSetPassword(ReSetPasswordRequest $request)
@@ -71,7 +71,7 @@ class AuthController extends Controller
             ->isVerifiedUnderIntime();
 
         if (!$validOtp) {
-            return response()->json(['message' => 'Invalid or expired OTP.'], 400);
+            return response()->json(['message' => __('auth.invalid_or_expired_otp')], 400);
         }
 
         $user = User::where('phone_number', $data['phone_number'])->firstOrFail();
@@ -79,7 +79,7 @@ class AuthController extends Controller
         $user->password = bcrypt($data['password']);
         $user->save();
 
-        return response()->json(['message' => 'Password reset successfully.'], 200);
+        return response()->json(['message' => __('auth.password_reset_successfully')], 200);
     }
 
 }
