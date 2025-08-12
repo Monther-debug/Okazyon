@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Utility\Enums\UserStatusEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,21 +25,57 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'phone_number' => '+' . fake()->numerify('############'),
+            'date_of_birth' => fake()->dateTimeBetween('-50 years', '-18 years')->format('Y-m-d'),
+            'gender' => fake()->randomElement(['male', 'female', 'other']),
             'password' => static::$password ??= Hash::make('password'),
+            'type' => fake()->randomElement(['user', 'admin']),
+            'status' => fake()->randomElement(UserStatusEnum::cases()),
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Create active users
      */
-    public function unverified(): static
+    public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+        return $this->state(fn(array $attributes) => [
+            'status' => UserStatusEnum::ACTIVE,
+        ]);
+    }
+
+    /**
+     * Create admin users
+     */
+    public function admin(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'type' => 'admin',
+            'status' => UserStatusEnum::ACTIVE,
+        ]);
+    }
+
+    /**
+     * Create regular users
+     */
+    public function user(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'type' => 'user',
+            'status' => UserStatusEnum::ACTIVE,
+        ]);
+    }
+
+    /**
+     * Create banned users
+     */
+    public function banned(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'status' => UserStatusEnum::BANNED,
         ]);
     }
 }
