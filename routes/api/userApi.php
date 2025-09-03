@@ -3,6 +3,7 @@ use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\OTPController;
 use App\Http\Controllers\User\FCMController;
 use App\Http\Controllers\User\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:otp')->group(function () {
     Route::post('/sendotp', [OTPController::class, 'generateOTP']);

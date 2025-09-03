@@ -40,6 +40,7 @@ class AuthController extends Controller
             return response()->json(['message' => __('auth.invalid_credentials')], 401);
         }
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -53,6 +54,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $user->tokens()->delete();
 
