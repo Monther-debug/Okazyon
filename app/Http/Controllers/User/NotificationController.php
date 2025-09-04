@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -21,7 +22,7 @@ class NotificationController extends Controller
                 $query->where('target_type', 'all')
                     ->orWhere(function ($subQuery) {
                         $subQuery->where('target_type', 'specific_user')
-                            ->where('target_id', auth()->id());
+                            ->where('target_id', Auth::id());
                     });
             })
             ->orderBy('created_at', 'desc')
@@ -36,7 +37,7 @@ class NotificationController extends Controller
     public function show(Notification $notification)
     {
         // Check if user can view this notification
-        if ($notification->target_type === 'specific_user' && $notification->target_id !== auth()->id()) {
+        if ($notification->target_type === 'specific_user' && $notification->target_id !== Auth::id()) {
             return response()->json(['message' => __('auth.unauthorized')], 403);
         }
 
