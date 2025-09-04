@@ -23,11 +23,8 @@ class RegisterAnAccountRequest extends FormRequest
     {
         return [
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
             'phone_number' => 'required|regex:/^\+?[0-9]{10,15}$/',
-            'date_of_birth' => 'required|date|before:today',
             'password' => 'required|string|min:8|confirmed',
-            'gender' => 'required|string|in:male,female,other',
             'otp' => 'required|integer|digits:6',
         ];
     }
