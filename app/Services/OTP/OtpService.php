@@ -27,15 +27,36 @@ class OtpService
             ]);
 
             $message = "Your OTP code for $purpose is: $otpCode. It is valid for 5 minutes.";
-            $isend = ISend::to($phoneNumber)
-                ->message($message)
-                ->send();
-            if (!$isend->getId()) {
-                Log::error("Failed to send OTP to {$phoneNumber}", [
-                    'purpose' => $purpose,
-                    'response' => $isend->getLastResponse()
+            
+            if (config('app.env') === 'local') {
+                Log::info("OTP Generated for development", [
+                    'phone_number' => $phoneNumber,
+                    'otp_code' => $otpCode,
+                    'purpose' => $purpose
                 ]);
-                return false;
+                
+                if (!config('isend.api_token')) {
+                    Log::info("SMS sending skipped in local environment - no ISend API token configured");
+                    return true; 
+                }
+            }
+            
+            if (config('isend.api_token')) {
+                $isend = ISend::to($phoneNumber)
+                    ->message($message)
+                    ->send();
+                if (!$isend->getId()) {
+                    Log::error("Failed to send OTP to {$phoneNumber}", [
+                        'purpose' => $purpose,
+                        'response' => $isend->getLastResponse()
+                    ]);
+                    return false;
+                }
+            } else {
+                if (config('app.env') !== 'local') {
+                    Log::error("No ISend API token configured in production environment");
+                    return false;
+                }
             }
         } catch (ISendException $e) {
             Log::error("Exception while sending OTP to {$phoneNumber}", [
