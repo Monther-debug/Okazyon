@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Otp;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Services\OTP\OtpService;
 
 class AuthController extends Controller
 {
@@ -17,32 +18,18 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        $otpRecord = Otp::forPhoneNumber($data['phone_number'])
-            ->forPurpose('register')
-            ->forOtpCode($data['otp'])
-            ->forUnverified()  // Only get unverified OTPs
-            ->first();
-            
-        if (!$otpRecord) {
-            return response()->json(['message' => __('auth.invalid_or_expired_otp')], 400);
-        }
-        
-        if ($otpRecord->isExpired()) {
-            return response()->json(['message' => __('auth.invalid_or_expired_otp')], 400);
-        }
-        
-        $otpRecord->verify();
-        
-        unset($data['otp']);
         $data['password'] = bcrypt($data['password']);
         
         // Add default values for required fields that we removed from registration
-        $data['last_name'] = $data['last_name'] ?? '';  // Default empty string
-        $data['gender'] = $data['gender'] ?? 'other';  // Default value from allowed options
+        $data['last_name'] = $data['last_name'] ?? '';
+        $data['gender'] = $data['gender'] ?? 'other';
         
-        User::create($data);
+        $user = User::create($data);
         
-        return response()->json(['message' => __('auth.user_registered_successfully')], 201);
+        $otpService = new OtpService();
+        $otpService->generateOtp($user->phone_number, 'account_verification');
+        
+        return response()->json(['message' => __('auth.user_registered_successfully_otp_sent')], 201);
     }
 
     public function login(LogInRequest $request)
