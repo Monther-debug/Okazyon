@@ -4,6 +4,7 @@ use App\Http\Controllers\User\OTPController;
 use App\Http\Controllers\User\FCMController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\NotificationController;
+use App\Http\Controllers\API\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:otp')->group(function () {
@@ -30,4 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Notification routes
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/{notification}', [NotificationController::class, 'show']);
+    
+    // Product management routes (seller only)
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{product}', [ProductController::class, 'update']);
+    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 });

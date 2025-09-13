@@ -7,17 +7,21 @@ use App\Http\Requests\User\Profile\UpdateProfileRequest;
 use App\Http\Requests\User\Profile\ChangePasswordRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function profile(Request $request)
     {
-        return UserResource::make(auth()->user());
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return UserResource::make($user);
     }
 
     public function updateProfile(UpdateProfileRequest $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $data = $request->validated();
 
         $user->update($data);
@@ -29,7 +33,8 @@ class UserController extends Controller
 
     public function changePassword(ChangePasswordRequest $request)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         if (!password_verify($request->current_password, $user->password)) {
             return response()->json(['message' => __('auth.current_password_incorrect')], 400);
