@@ -4,6 +4,7 @@ use App\Http\Controllers\User\OTPController;
 use App\Http\Controllers\User\FCMController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\NotificationController;
+use App\Http\Controllers\User\SellerDashboardController;
 use App\Http\Controllers\User\SellerOrderController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
@@ -45,11 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']); // Cancel order
     
-    // Seller order management routes
+    // Seller dashboard and order management routes
     Route::prefix('seller')->group(function () {
-        Route::get('/orders/statistics', [SellerOrderController::class, 'statistics']);
+        Route::get('/dashboard', [SellerDashboardController::class, 'index']);
         Route::get('/orders', [SellerOrderController::class, 'index']);
         Route::get('/orders/{order}', [SellerOrderController::class, 'show']);
-        Route::patch('/orders/{order}/product-status', [SellerOrderController::class, 'updateProductStatus']);
+        Route::put('/orders/{order}', [SellerOrderController::class, 'update']);
     });
 });
