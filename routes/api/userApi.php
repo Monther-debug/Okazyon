@@ -4,7 +4,9 @@ use App\Http\Controllers\User\OTPController;
 use App\Http\Controllers\User\FCMController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\NotificationController;
+use App\Http\Controllers\User\SellerOrderController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:otp')->group(function () {
@@ -36,4 +38,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    
+    // Order management routes (buyer)
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy']); // Cancel order
+    
+    // Seller order management routes
+    Route::prefix('seller')->group(function () {
+        Route::get('/orders/statistics', [SellerOrderController::class, 'statistics']);
+        Route::get('/orders', [SellerOrderController::class, 'index']);
+        Route::get('/orders/{order}', [SellerOrderController::class, 'show']);
+        Route::patch('/orders/{order}/product-status', [SellerOrderController::class, 'updateProductStatus']);
+    });
 });
