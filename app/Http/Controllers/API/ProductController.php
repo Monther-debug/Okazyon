@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,15 +45,31 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'discounted_price' => 'nullable|numeric|min:0|lt:price',
-            'image_url' => 'nullable|string|url',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|string|url',
             'expiration_date' => 'nullable|date|after:today',
             'storage_instructions' => 'nullable|string',
         ]);
 
         $validated['user_id'] = Auth::id();
 
+        // Remove images from validated data before creating product
+        $images = $validated['images'] ?? [];
+        unset($validated['images']);
+
         $product = Product::create($validated);
-        $product->load(['user', 'category']);
+
+        // Create product images if provided
+        if (!empty($images)) {
+            foreach ($images as $imageUrl) {
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_url' => $imageUrl,
+                ]);
+            }
+        }
+
+        $product->load(['user', 'category', 'images']);
 
         return response()->json([
             'data' => $product,
@@ -73,7 +90,15 @@ class ProductController extends Controller
             ], 404);
         }
 
-        $product->load(['user', 'category']);
+        // Eager load basic relationships
+        $product->load(['images', 'category', 'user:id,first_name,last_name,is_verified']);
+
+        // Prepare seller information
+        $seller = [
+            'id' => $product->user->id,
+            'name' => trim($product->user->first_name . ' ' . $product->user->last_name),
+            'is_verified' => $product->user->is_verified ?? false,
+        ];
 
         // Initialize review data
         $reviewData = [
@@ -88,30 +113,48 @@ class ProductController extends Controller
                 $query->with('user:id,first_name,last_name')->orderBy('created_at', 'desc');
             }]);
 
-            $reviewData = [
-                'reviews' => $product->reviews->map(function ($review) {
-                    return [
-                        'id' => $review->id,
-                        'rating' => $review->rating,
-                        'comment' => $review->comment,
-                        'user' => [
-                            'id' => $review->user->id,
-                            'name' => trim($review->user->first_name . ' ' . $review->user->last_name),
-                        ],
-                        'created_at' => $review->created_at,
-                    ];
-                }),
-                'average_rating' => $product->reviews->count() > 0 ? round($product->reviews->avg('rating'), 1) : 0,
-                'total_reviews_count' => $product->reviews->count()
-            ];
+            if ($product->reviews->count() > 0) {
+                $reviewData = [
+                    'reviews' => $product->reviews->map(function ($review) {
+                        return [
+                            'id' => $review->id,
+                            'rating' => $review->rating,
+                            'comment' => $review->comment,
+                            'user' => [
+                                'name' => trim($review->user->first_name . ' ' . $review->user->last_name),
+                            ],
+                            'created_at' => $review->created_at->diffForHumans(),
+                        ];
+                    }),
+                    'average_rating' => round($product->reviews->avg('rating'), 1),
+                    'total_reviews_count' => $product->reviews->count()
+                ];
+            }
         }
 
-        // Prepare response data
-        $responseData = $product->toArray();
-        $responseData = array_merge($responseData, $reviewData);
+        // Prepare the complete response
+        $response = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'discounted_price' => $product->discounted_price,
+            'discount_percentage' => $product->discount_percentage,
+            'status' => $product->status,
+            'expiration_date' => $product->expiration_date,
+            'storage_instructions' => $product->storage_instructions,
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at,
+            'images' => $product->images->pluck('image_url'),
+            'category' => $product->category,
+            'seller' => $seller,
+        ];
+
+        // Merge review data
+        $response = array_merge($response, $reviewData);
 
         return response()->json([
-            'data' => $responseData,
+            'data' => $response,
             'message' => 'Product retrieved successfully.',
         ]);
     }

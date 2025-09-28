@@ -21,11 +21,17 @@ class Product extends Model
         'description',
         'price',
         'discounted_price',
-        'image_url',
         'status',
         'expiration_date',
         'storage_instructions',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['discount_percentage'];
 
     /**
      * The attributes that should be cast.
@@ -70,5 +76,24 @@ class Product extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Get the images for the product.
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    /**
+     * Calculate discount percentage automatically.
+     */
+    public function getDiscountPercentageAttribute()
+    {
+        if ($this->price > 0 && $this->discounted_price && $this->discounted_price < $this->price) {
+            return round((($this->price - $this->discounted_price) / $this->price) * 100);
+        }
+        return 0;
     }
 }
