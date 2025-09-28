@@ -75,8 +75,43 @@ class ProductController extends Controller
 
         $product->load(['user', 'category']);
 
+        // Initialize review data
+        $reviewData = [
+            'reviews' => [],
+            'average_rating' => 0,
+            'total_reviews_count' => 0
+        ];
+
+        // Only include reviews for non-food products
+        if ($product->category && $product->category->type !== 'food') {
+            $product->load(['reviews' => function ($query) {
+                $query->with('user:id,first_name,last_name')->orderBy('created_at', 'desc');
+            }]);
+
+            $reviewData = [
+                'reviews' => $product->reviews->map(function ($review) {
+                    return [
+                        'id' => $review->id,
+                        'rating' => $review->rating,
+                        'comment' => $review->comment,
+                        'user' => [
+                            'id' => $review->user->id,
+                            'name' => trim($review->user->first_name . ' ' . $review->user->last_name),
+                        ],
+                        'created_at' => $review->created_at,
+                    ];
+                }),
+                'average_rating' => $product->reviews->count() > 0 ? round($product->reviews->avg('rating'), 1) : 0,
+                'total_reviews_count' => $product->reviews->count()
+            ];
+        }
+
+        // Prepare response data
+        $responseData = $product->toArray();
+        $responseData = array_merge($responseData, $reviewData);
+
         return response()->json([
-            'data' => $product,
+            'data' => $responseData,
             'message' => 'Product retrieved successfully.',
         ]);
     }

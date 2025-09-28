@@ -8,6 +8,7 @@ use App\Http\Controllers\User\SellerDashboardController;
 use App\Http\Controllers\User\SellerOrderController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:otp')->group(function () {
@@ -39,6 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    
+    // Product review routes (authenticated users only)
+    Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
     
     // Order management routes (buyer)
     Route::post('/orders', [OrderController::class, 'store']);
