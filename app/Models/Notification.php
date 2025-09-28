@@ -57,4 +57,20 @@ class Notification extends Model
         return $query->where('target_type', $type);
     }
 
+    /**
+     * Get users who have read this notification
+     */
+    public function readByUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_notification_reads')->withTimestamps();
+    }
+
+    /**
+     * Check if a specific user has read this notification
+     */
+    public function isReadByUser($userId)
+    {
+        return $this->readByUsers()->where('user_id', $userId)->exists();
+    }
+
 }

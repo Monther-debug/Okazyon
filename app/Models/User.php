@@ -122,4 +122,12 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
     }
+
+    /**
+     * Get notifications that this user has read
+     */
+    public function readNotifications()
+    {
+        return $this->belongsToMany(Notification::class, 'user_notification_reads')->withTimestamps();
+    }
 }

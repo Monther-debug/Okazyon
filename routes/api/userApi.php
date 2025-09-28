@@ -35,6 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Notification routes
     Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/status', [NotificationController::class, 'unreadCount']);
+    Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::put('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::get('/notifications/{notification}', [NotificationController::class, 'show']);
     
     // Product management routes (seller only)
