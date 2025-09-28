@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with(['user', 'category'])->where('status', 'approved');
+        $query = Product::with(['user', 'category', 'images'])->where('status', 'approved');
 
         // Filter by category if provided
         if ($request->has('category_id')) {
@@ -27,8 +27,35 @@ class ProductController extends Controller
 
         $products = $query->latest()->get();
 
+        // Get user's favorites if authenticated
+        $userFavorites = [];
+        if (Auth::check()) {
+            $userFavorites = Auth::user()->favorites()->pluck('product_id')->toArray();
+        }
+
+        // Transform products with is_favorited attribute
+        $transformedProducts = $products->map(function ($product) use ($userFavorites) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'discounted_price' => $product->discounted_price,
+                'discount_percentage' => $product->discount_percentage,
+                'status' => $product->status,
+                'images' => $product->images->pluck('image_url'),
+                'category' => $product->category,
+                'seller' => [
+                    'name' => trim($product->user->first_name . ' ' . $product->user->last_name),
+                ],
+                'is_favorited' => in_array($product->id, $userFavorites),
+                'created_at' => $product->created_at,
+                'updated_at' => $product->updated_at,
+            ];
+        });
+
         return response()->json([
-            'data' => $products,
+            'data' => $transformedProducts,
             'message' => 'Products retrieved successfully.',
         ]);
     }
@@ -132,6 +159,12 @@ class ProductController extends Controller
             }
         }
 
+        // Check if product is favorited by authenticated user
+        $isFavorited = false;
+        if (Auth::check()) {
+            $isFavorited = Auth::user()->favorites()->where('product_id', $product->id)->exists();
+        }
+
         // Prepare the complete response
         $response = [
             'id' => $product->id,
@@ -148,6 +181,7 @@ class ProductController extends Controller
             'images' => $product->images->pluck('image_url'),
             'category' => $product->category,
             'seller' => $seller,
+            'is_favorited' => $isFavorited,
         ];
 
         // Merge review data

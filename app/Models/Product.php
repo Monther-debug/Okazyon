@@ -87,6 +87,14 @@ class Product extends Model
     }
 
     /**
+     * Get users who favorited this product.
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+
+    /**
      * Calculate discount percentage automatically.
      */
     public function getDiscountPercentageAttribute()

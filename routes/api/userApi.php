@@ -9,6 +9,7 @@ use App\Http\Controllers\User\SellerOrderController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\FavoriteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:otp')->group(function () {
@@ -43,6 +44,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Product review routes (authenticated users only)
     Route::post('/products/{product}/reviews', [ReviewController::class, 'store']);
+    
+    // Favorites routes (authenticated users only)
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/products/{product}/favorite', [FavoriteController::class, 'store']);
+    Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy']);
     
     // Order management routes (buyer)
     Route::post('/orders', [OrderController::class, 'store']);

@@ -114,4 +114,12 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Review::class);
     }
+
+    /**
+     * Get the user's favorite products.
+     */
+    public function favorites()
+    {
+        return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
+    }
 }
