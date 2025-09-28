@@ -22,6 +22,7 @@ class Product extends Model
         'price',
         'discounted_price',
         'status',
+        'is_featured',
         'expiration_date',
         'storage_instructions',
     ];
@@ -42,6 +43,7 @@ class Product extends Model
         'price' => 'decimal:2',
         'discounted_price' => 'decimal:2',
         'expiration_date' => 'date',
+        'is_featured' => 'boolean',
     ];
 
     /**
@@ -103,5 +105,21 @@ class Product extends Model
             return round((($this->price - $this->discounted_price) / $this->price) * 100);
         }
         return 0;
+    }
+
+    /**
+     * Scope to get only featured products.
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    /**
+     * Scope to get only approved products.
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
     }
 }
